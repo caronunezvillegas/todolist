@@ -1,0 +1,59 @@
+{% load  static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'main.css' %}">
+    <title>To-Do App</title>
+</head>
+<body>
+
+    <main>
+        <h1 class="main-title">TO-DO LIST</h1>
+
+      {% if user.is_authenticated %}
+        <h3>Bienvenid@ {{ user.username }}!</h3>
+        <p><a href="{% url 'logout' %}"><h3>Cerrar Sesión</h3></a></p>
+      {% else %}
+        <p>No has iniciado sesión aún</p>
+        <a href="{% url 'login' %}">Iniciar Sesión</a>
+      {% endif %}
+
+
+        <div class="main-form">
+            <form action="{% url 'create_task' %}" method="POST">
+                {% csrf_token %}
+                <input type="text" name="title" placeholder="Ingresa aquí el nombre de una tarea">
+                <textarea name="description" rows="3" placeholder="Ingresa una Descripción"></textarea>
+                <button>Guardar</button>
+            </form>
+        </div>
+
+        {% for task in tasks %}
+            <div class="task-card">
+                <div>
+                    <h3>
+                        {{task.title}}
+                    </h3>
+                    <p>{{task.description}}</p>
+                </div>
+                <div class="task-card--buttons">
+                    <a href="{% url 'edit_task' task.id %}">Editar</a>
+                    <form action="{% url 'delete_task' task.id %}" method="POST" class="delete-form">
+                        {% csrf_token %}
+                        <button>Borrar</button>
+                    </form>
+                </div>
+            </div>
+
+        <!-- If the tasks table is empty show this... -->
+        {% empty %}
+        <h2>Aún no has registrado ninguna tarea</h2>
+        {% endfor %}
+    </main>
+
+</body>
+</html>
